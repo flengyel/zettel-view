@@ -41,7 +41,7 @@
 	},
 	"devDependencies": {
 		"@types/mkdirp": "^0.5.2",
-		"@types/node": "^16.18.34",
+		"@types/node": "^16.18.36",
 		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.73.0",
 		"@typescript-eslint/eslint-plugin": "^5.42.0",
