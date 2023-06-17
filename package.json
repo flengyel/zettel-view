@@ -1,14 +1,14 @@
 {
-	"name": "markdown-h1-explorer",
-	"displayName": "Markdown H1 Explorer",
-	"description": "File list with H1 Title",
+	"name": "zettel-view",
+	"displayName": "Zettel View",
+	"description": "Display a list of markdown files by their H1 header.",
 	"version": "0.0.1",
 	"publisher": "flengyel",
 	"private": true,
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/flengyel/markdown-h1-explorer"
+		"url": "https://github.com/flengyel/zettel-view"
 	},
 	"engines": {
 		"vscode": "^1.74.0"
@@ -17,6 +17,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onView:${viewId}",
 		"onLanguage:markdown"
 	],
 	"main": "./out/extension.js",
