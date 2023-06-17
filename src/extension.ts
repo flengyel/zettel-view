@@ -43,7 +43,7 @@ class MarkdownFilesProvider implements vscode.TreeDataProvider<MarkdownTreeItem>
                     const match = firstH1Line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
 
                     if (match && `${match[1]}.md` === file) {
-                        const label = `${match[1]} ${match[3]}`;
+                        const label = `${match[1]} ${match[match.length-1]}`;
                         return new MarkdownTreeItem(label, vscode.TreeItemCollapsibleState.None, {
                             command: 'vscode.open',
                             title: '',
