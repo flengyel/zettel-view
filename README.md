@@ -1,6 +1,6 @@
 # Zettel View: a VS Code extension to list Zettels by H1 header
 
-Zettel View is VStudio Code extension to display a list of markdown files by their H1 header. Zettel View and it contributes a Zettlr-like display of Zettels to the VS Code Explorer View, as shown below.
+Zettel View is VStudio Code extension to display a list of markdown files by their H1 header. Zettel View contributes a Zettlr-like display of Zettels to the VS Code Explorer View, as shown below.
 
 
 
