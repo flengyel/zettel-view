@@ -14,7 +14,7 @@ Zettr has the built-in configuration setting, "Display files using first heading
 
 ## Authors
 
-Zettel View is a three-way collaboration between me, [@flengyel](https://github.com/flengyel), [ChatGPT-4](https://chat.openai.com), and [Bing Chat](https://www.bing.com/search?form=MA13FJ&q=Bing+AI&showconv=1). Some boilerplate code and resource files were borrowed (or left over) from Microsoft's tree-view-sample code sample, which was pared down and modified for this extension. Accordingly, the code is released under an MIT license. The text is CC BY-SA 4.0.
+Zettel View is a three-way collaboration between me, [@flengyel](https://github.com/flengyel), [ChatGPT-4](https://chat.openai.com), and [Bing Chat](https://www.bing.com/search?form=MA13FJ&q=Bing+AI&showconv=1). Some boilerplate code and resource files were borrowed (or left over) from Microsoft's [Tree View](https://code.visualstudio.com/api/extension-guides/tree-view#extension-capabilities-articles) code sample, which was pared down and modified for this extension. Accordingly, the code is released under an MIT license. The text is CC BY-SA 4.0.
 
 ## VS Code API
 
