@@ -1,0 +1,56 @@
+{
+	"name": "markdown-h1-explorer",
+	"displayName": "Markdown H1 Explorer",
+	"description": "File list with H1 Title",
+	"version": "0.0.1",
+	"publisher": "flengyel",
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/flengyel/markdown-h1-explorer"
+	},
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:markdown"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "markdownFiles",
+					"name": "Zettel View",
+					"icon": "media/dep.svg",
+					"contextualTitle": "Zettelkasten View"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"lint": "eslint \"src/**/*.ts\""
+	},
+	"devDependencies": {
+		"@types/mkdirp": "^0.5.2",
+		"@types/node": "^16.18.34",
+		"@types/rimraf": "^2.0.2",
+		"@types/vscode": "^1.73.0",
+		"@typescript-eslint/eslint-plugin": "^5.42.0",
+		"@typescript-eslint/parser": "^5.42.0",
+		"eslint": "^8.26.0",
+		"typescript": "^5.1.3"
+	},
+	"dependencies": {
+		"minimist": "^1.2.6",
+		"mkdirp": "^0.5.1",
+		"rimraf": "^2.6.2"
+	}
+}
