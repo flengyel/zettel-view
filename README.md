@@ -4,7 +4,7 @@ Zettel View is VStudio Code extension to display a list of markdown files by the
 
 
 
-![Zettel View](./resources/ZettelView.png)
+![Zettel View](./resources/Zettel-View.png)
 
 ## VS Code API
 
