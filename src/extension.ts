@@ -5,24 +5,52 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-class MarkdownTreeItem extends vscode.TreeItem {
+
+class AsyncMarkdownTreeItem extends vscode.TreeItem {
+    public label: string;
     constructor(
-        public readonly label: string,
+        public readonly pathname: string,
+        public readonly basename: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly command?: vscode.Command,
     ) {
-        super(label, collapsibleState);
+        super(basename, collapsibleState);
+        this.label = basename; // we will assume that the label is the basename
+        
+        return (async (): Promise<AsyncMarkdownTreeItem> =>{
+            const fileStream = fs.createReadStream(pathname);
+            const rl = readline.createInterface({
+              input: fileStream,
+              crlfDelay: Infinity,
+            });
+            // Note: we use the crlfDelay option to recognize all instances of CR LF
+            // ('\r\n') in input.txt as a single line break.
+          
+            for await (const line of rl) {
+              const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+              // console.log(`Line from file: ${line}`);
+              if (match){
+                //console.log(`we matched ${match[match.length-1]}`);
+                this.label = line; // show the H1 header
+                rl.close(); // we're done
+                return this;
+              }
+            }
+            console.log(`Markdown file not a Zettel: ${basename}`);
+            rl.close();
+            return this;
+        })() as unknown as AsyncMarkdownTreeItem;
     }
 }
 
-class MarkdownFilesProvider implements vscode.TreeDataProvider<MarkdownTreeItem> {
+class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTreeItem> {
     constructor(private workspaceRoot: string) {}
 
-    getTreeItem(element: MarkdownTreeItem): vscode.TreeItem {
+    getTreeItem(element: AsyncMarkdownTreeItem): vscode.TreeItem {
         return element;
     }
 
-    getChildren(element?: MarkdownTreeItem): Thenable<MarkdownTreeItem[]> {
+    getChildren(element?: AsyncMarkdownTreeItem): Thenable<AsyncMarkdownTreeItem[]> {
         if (!this.workspaceRoot) {
             vscode.window.showInformationMessage('No markdown files found in your workspace');
             return Promise.resolve([]);
@@ -38,25 +66,21 @@ class MarkdownFilesProvider implements vscode.TreeDataProvider<MarkdownTreeItem>
                 const markdownFiles = files.filter(file => file.endsWith('.md'));
 
                 resolve(markdownFiles.map(file => {
-                    const fileContents = fs.readFileSync(path.join(this.workspaceRoot, file)).toString();
-                    const lines = fileContents.split('\n');
-                    const firstH1Line = lines.find(line => line.startsWith('# '));
-                    const match = firstH1Line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+                    
+                    // an async object will determine whether to create a tree item with
+                    // a filename or an H1 label
 
-                    if (match && `${match[1]}.md` === file) {
-                        const label = `${match[1]} ${match[match.length-1]}`;
-                        return new MarkdownTreeItem(label, vscode.TreeItemCollapsibleState.None, {
-                            command: 'vscode.open',
-                            title: '',
-                            arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
-                        });
-                    } else {
-                        return new MarkdownTreeItem(file, vscode.TreeItemCollapsibleState.None, {
-                            command: 'vscode.open',
-                            title: '',
-                            arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
-                        });
-                    }
+                    const treeItem =
+                    (async => {
+                    const obj =  new AsyncMarkdownTreeItem(path.join(this.workspaceRoot, file), file, vscode.TreeItemCollapsibleState.None, {
+                        command: 'vscode.open',
+                        title: '',
+                        arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
+                    });
+                    return obj;
+                  })(); 
+                  return treeItem;
+
                 }));
             });
         });
