@@ -7,7 +7,8 @@ import * as readline from 'readline';
 
 
 class AsyncMarkdownTreeItem extends vscode.TreeItem {
-    public label: string;
+    //public label: string; This is public in TreeItem!
+    // no wonder why this works...
     constructor(
         public readonly pathname: string,
         public readonly basename: string,
