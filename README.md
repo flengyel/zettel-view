@@ -10,7 +10,7 @@ Zettel View makes some assumptions about Zettels. First, Zettels are markdown fi
 
 The second and third assumptions are hard-coded but could be made configurable in later versions of the extension. The fourth assumption isn't enforced: a mismatch between `ID.md` and the filename will appear as a discrepancy between the Zettel selected in the Zettel View and the file explorer. A warning will be emitted in that case.
 
-Zettr has the built-in configuration setting, "Display files using first heading level 1 if available." A community plugin for Obsidian called "File Explorer Markdown Titles" once produced a similar display in the Obsidian file explorer. Unfortunately, that plugin no longer works with newer versions of Obsidian. Since VS Code is more valuable for my work than Obsidian, it made more sense to develop a VS Code extension than to modify the plugin to work with the current Obsidian API. I plan to move to VS Code the Pandoc and LaTeX integration I configured in Zettlr.
+Zettr has the built-in configuration setting, "Display files using first heading level 1 if available." A community plugin for Obsidian called [File Explorer Markdown Titles](https://github.com/Dyldog/file-explorer-markdown-titles) once produced a similar display in the Obsidian file explorer. Unfortunately, that plugin no longer works with newer versions of Obsidian. Since VS Code is more valuable for my work than Obsidian, it made more sense to develop a VS Code extension than to modify the plugin to work with the current Obsidian API. I plan to move to VS Code the Pandoc and LaTeX integration I configured in Zettlr.
 
 ## Authors
 
