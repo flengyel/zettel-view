@@ -15,30 +15,36 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
         public readonly command?: vscode.Command,
     ) {
         super(basename, collapsibleState);
-        this.label = basename; // we will assume that the label is the basename
+        this.label = basename; // assume the label is the basename
         
         return (async (): Promise<AsyncMarkdownTreeItem> =>{
-            const fileStream = fs.createReadStream(pathname);
-            const rl = readline.createInterface({
-              input: fileStream,
-              crlfDelay: Infinity,
-            });
-            // Note: we use the crlfDelay option to recognize all instances of CR LF
-            // ('\r\n') in input.txt as a single line break.
+            try {            
+                const fileStream = fs.createReadStream(pathname);
+                const rl = readline.createInterface({
+                  input: fileStream,
+                 crlfDelay: Infinity,
+                });
           
-            for await (const line of rl) {
-              const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
-              // console.log(`Line from file: ${line}`);
-              if (match){
-                //console.log(`we matched ${match[match.length-1]}`);
-                this.label = line; // show the H1 header
-                rl.close(); // we're done
+                // The mixed technique does not work--
+                // rl.on('line', (line) => 
+            
+                for await (const line of rl) {
+                    const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+                    // console.log(`Line from file: ${line}`);
+                    if (match) {
+                        this.label = line; // show the H1 header
+                        rl.close(); // we're done
+                        return this;
+                    }
+                }
+
+                console.log(`No H1 header or ID/filename mismatch: ${basename}`);
+                rl.close();
                 return this;
-              }
+            } catch (err) {
+                console.error(err);
+                return this;
             }
-            console.log(`No H1 header or ID/filename mismatch: ${basename}`);
-            rl.close();
-            return this;
         })() as unknown as AsyncMarkdownTreeItem;
     }
 }
