@@ -6,6 +6,10 @@ import * as path from 'path';
 import * as readline from 'readline';
 
 
+// since we cannot make an asynchronous call to a constructor
+// and we want to consume a stream line-by-line, we return
+// an IIAFE: immediately invoked Asynchronous Function Expression
+// See: https://stackoverflow.com/questions/43431550/async-await-class-constructor/50885340#50885340
 class AsyncMarkdownTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
     // no wonder why this works...
