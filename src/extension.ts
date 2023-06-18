@@ -36,7 +36,7 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
                 return this;
               }
             }
-            console.log(`Markdown file not a Zettel: ${basename}`);
+            console.log(`No H1 header or ID/filename mismatch: ${basename}`);
             rl.close();
             return this;
         })() as unknown as AsyncMarkdownTreeItem;
