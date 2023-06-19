@@ -79,6 +79,14 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
 class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTreeItem> {
     constructor(private workspaceRoot: string) {}
 
+    // events and event handling for recomputing the tree
+    _onDidChangeTreeData: vscode.EventEmitter<undefined> = new vscode.EventEmitter<undefined>();
+    onDidChangeTreeData: vscode.Event<undefined> = this._onDidChangeTreeData.event;
+
+    refresh(): void {
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
     getTreeItem(element: AsyncMarkdownTreeItem): vscode.TreeItem {
         return element;
     }
