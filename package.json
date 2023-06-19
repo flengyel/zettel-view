@@ -17,7 +17,6 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onView:${viewId}",
 		"onLanguage:markdown"
 	],
 	"main": "./out/extension.js",
@@ -25,13 +24,32 @@
 		"views": {
 			"explorer": [
 				{
-					"id": "markdownFiles",
+					"id": "zettelView",
 					"name": "Zettel View",
 					"icon": "media/dep.svg",
 					"contextualTitle": "Zettelkasten View"
 				}
 			]
-		}
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "zettelView.refreshEntry",
+					"when": "view == zettelView",
+					"group": "navigation"
+				}
+			]
+		},
+		"commands": [
+            {
+                "command": "zettelView.refreshEntry",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            }
+    ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
