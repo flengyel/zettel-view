@@ -21,7 +21,7 @@ class myLogger {
     }
 }
 
-class AsyncMarkdownTreeItem extends vscode.TreeItem {
+class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
     // no wonder why this works...
     constructor(
@@ -38,7 +38,7 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
         // an IIAFE: immediately invoked Asynchronous Function Expression
         // See: https://stackoverflow.com/questions/43431550/async-await-class-constructor/50885340#50885340
 
-        return (async (): Promise<AsyncMarkdownTreeItem> =>{
+        return (async (): Promise<AsyncZettelViewTreeItem> =>{
             try {            
                 const fileStream = fs.createReadStream(pathname);
                 const rl = readline.createInterface({
@@ -72,11 +72,11 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
                 console.error(err);
                 return this;
             }
-        })() as unknown as AsyncMarkdownTreeItem;
+        })() as unknown as AsyncZettelViewTreeItem;
     }
 }
 
-class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTreeItem> {
+class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelViewTreeItem> {
     constructor(private workspaceRoot: string) {}
 
     // events and event handling for recomputing the tree
@@ -87,11 +87,11 @@ class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTree
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    getTreeItem(element: AsyncMarkdownTreeItem): vscode.TreeItem {
+    getTreeItem(element: AsyncZettelViewTreeItem): vscode.TreeItem {
         return element;
     }
 
-    getChildren(element?: AsyncMarkdownTreeItem): Thenable<AsyncMarkdownTreeItem[]> {
+    getChildren(element?: AsyncZettelViewTreeItem): Thenable<AsyncZettelViewTreeItem[]> {
         if (!this.workspaceRoot) {
             vscode.window.showInformationMessage('No markdown files found in your workspace');
             return Promise.resolve([]);
@@ -113,7 +113,7 @@ class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTree
 
                     const treeItem =
                     (async => {
-                    const obj =  new AsyncMarkdownTreeItem(path.join(this.workspaceRoot, file), file, vscode.TreeItemCollapsibleState.None, {
+                    const obj =  new AsyncZettelViewTreeItem(path.join(this.workspaceRoot, file), file, vscode.TreeItemCollapsibleState.None, {
                         command: 'vscode.open',
                         title: '',
                         arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
@@ -128,11 +128,12 @@ class MarkdownFilesProvider implements vscode.TreeDataProvider<AsyncMarkdownTree
     }
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
     const workspaceRoot = vscode.workspace.rootPath;
     if (workspaceRoot) {
-        const provider = new MarkdownFilesProvider(workspaceRoot);
-        vscode.window.registerTreeDataProvider('markdownFiles', provider);
+        const provider = new ZettelViewTreeDataProvider(workspaceRoot);
+        vscode.window.registerTreeDataProvider('zettelView', provider);
+        vscode.commands.registerCommand('zettelView.refreshEntry', () => provider.refresh());
     }
 }
 
