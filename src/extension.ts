@@ -6,10 +6,21 @@ import * as path from 'path';
 import * as readline from 'readline';
 
 
-// since we cannot make an asynchronous call to a constructor
-// and we want to consume a stream line-by-line, we return
-// an IIAFE: immediately invoked Asynchronous Function Expression
-// See: https://stackoverflow.com/questions/43431550/async-await-class-constructor/50885340#50885340
+// This is my rough and ready approach to logging: create
+// a static logger class that sets an output channel for messages
+// Until I add someone else's logger to the list of dependencies,
+// you'll have to put up with self-contained code.
+
+class myLogger {
+    static readonly myExtension = "Zettel View";
+    static readonly logOutputChannel = vscode.window.createOutputChannel(this.myExtension);
+    static logMsg(msg : string): void {
+        const now = new Date();  
+        const timestamp = now.toLocaleString();
+        this.logOutputChannel.appendLine(`[${timestamp}] ${msg}`);
+    }
+}
+
 class AsyncMarkdownTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
     // no wonder why this works...
@@ -21,7 +32,12 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
     ) {
         super(basename, collapsibleState);
         this.label = basename; // assume the label is the basename
-        
+
+        // since we cannot make an asynchronous call to a constructor
+        // and we want to consume a stream line-by-line, we return
+        // an IIAFE: immediately invoked Asynchronous Function Expression
+        // See: https://stackoverflow.com/questions/43431550/async-await-class-constructor/50885340#50885340
+
         return (async (): Promise<AsyncMarkdownTreeItem> =>{
             try {            
                 const fileStream = fs.createReadStream(pathname);
@@ -37,13 +53,19 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
                     const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
                     // console.log(`Line from file: ${line}`);
                     if (match) {
+                        // check if basename == match[1].md
+                        if (basename !== `${match[1]}.md`) {
+                            myLogger.logMsg(`ID ${match[1]} does not match filename ${basename}`);
+                            //vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
+                        } 
                         this.label = line; // show the H1 header
                         rl.close(); // we're done
                         return this;
                     }
                 }
-
-                console.log(`No H1 header or ID/filename mismatch: ${basename}`);
+               
+                myLogger.logMsg(`# ID TITLE header not found in: ${basename}`);
+                //vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
                 return this;
             } catch (err) {
@@ -105,3 +127,4 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerTreeDataProvider('markdownFiles', provider);
     }
 }
+
