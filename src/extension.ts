@@ -64,7 +64,7 @@ class AsyncMarkdownTreeItem extends vscode.TreeItem {
                     }
                 }
                
-                myLogger.logMsg(`# ID TITLE header not found in: ${basename}`);
+                myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
                 //vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
                 return this;
