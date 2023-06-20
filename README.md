@@ -6,11 +6,11 @@ Zettel View is a Visual Studio Code extension to display a list of markdown file
 
 Clicking on any file in the Zettel View window opens the Zettel markdown file in an editor window and causes the file explorer to highlight the selected file. Since I installed the "Auto-Open Markdown Preview" VS Code extension, the markdown preview of the selected Zettel also appears. The Zettel View output channel window displays informational messages about markdown files in the open folder.
 
-Zettel View makes some assumptions about Zettels:
-Zettels are markdown files with the extension `.md`.
-A markdown file's H1 or level-one header has the form `# ID TITLE` (the `ID` is to the left; some prefer the `ID` on the right).
-`ID` matches a regular expression in my [`ID` format](https://github.com/flengyel/Zettel/wiki/ID-regex-and-alphabetic-index).
-`ID.md` is the filename of the Zettel markdown file with the header `# ID TITLE`.
+Zettel View makes four assumptions about Zettels.
+1. Zettels are markdown files with the extension `.md`.
+2. A markdown file's H1 or level-one header has the form `# ID TITLE` (the `ID` is to the left; some prefer the `ID` on the right).
+3. `ID` matches a regular expression in my [`ID` format](https://github.com/flengyel/Zettel/wiki/ID-regex-and-alphabetic-index).
+4. `ID.md` is the filename of the Zettel markdown file with the header `# ID TITLE`.
 
 The second and third assumptions are hard-coded but could be made configurable in later versions of the extension. The extension does not enforce the fourth assumption: a mismatch between `ID.md` and the filename will appear as a discrepancy between the Zettel selected in the Zettel View, and the file explorer, and a message about the mismatch will appear in the Zettel View output channel window.
 
