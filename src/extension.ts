@@ -25,7 +25,12 @@ class myLogger {
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
-    // no wonder why this works...
+    // no wonder this works...
+
+    // compile a static regex to match the H1 header
+    // To do: make this regex configurable in settings
+    static re = new RegExp(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+   
     constructor(
         public readonly pathname: string,
         public readonly basename: string,
@@ -52,9 +57,9 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 // rl.on('line', (line) => 
             
                 for await (const line of rl) {
-                    const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
-                    //const match = line?.match(reID);
-                    // console.log(`Line from file: ${line}`);
+                    
+                    //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+                    const match = AsyncZettelViewTreeItem.re.exec(line);
                     if (match) {
                         // check if basename == match[1].md
                         if (basename !== `${match[1]}.md`) {
