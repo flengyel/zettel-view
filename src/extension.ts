@@ -120,14 +120,18 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
 
                     const treeItem =
                     (async => {
-                    const obj =  new AsyncZettelViewTreeItem(path.join(this.workspaceRoot, file), file, vscode.TreeItemCollapsibleState.None, {
-                        command: 'vscode.open',
-                        title: '',
-                        arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
-                    });
-                    return obj;
-                  })(); 
-                  return treeItem;
+                                const obj =  new AsyncZettelViewTreeItem(path.join(this.workspaceRoot, file), 
+                                        file,   
+                                        vscode.TreeItemCollapsibleState.None, {
+                                            command: 'vscode.open',
+                                            title: '',
+                                            arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
+                                        }
+                                    );
+                                return obj;
+                            }
+                    )(); 
+                    return treeItem;
 
                 }));
             });
