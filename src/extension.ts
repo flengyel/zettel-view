@@ -22,20 +22,6 @@ class myLogger {
 }
 
 
-const getConf = (key: string) =>
-  vscode.workspace.getConfiguration("zettelView")[key];
-
-const getRegexID = () => {
-  const DEFAULT_VALUE = "((\\w{1,4}\\.){2,}\\d\\w{3})";
-  const userValue = getConf("regexID") || DEFAULT_VALUE;
-
-  // Ensure the id is not preceeded by [[, which would make it a part of
-  // wiki-style link, and put the user-supplied regex in a capturing group to
-  // retrieve matching string.
-  return new RegExp(`(?<!\\[\\[)(${userValue})`, "m");
-};
-
-
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
@@ -67,6 +53,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
             
                 for await (const line of rl) {
                     const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+                    //const match = line?.match(reID);
                     // console.log(`Line from file: ${line}`);
                     if (match) {
                         // check if basename == match[1].md
