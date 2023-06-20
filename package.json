@@ -49,7 +49,7 @@
                     "dark": "resources/dark/refresh.svg"
                 }
             }
-    ]
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
