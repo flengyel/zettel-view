@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-
 // This is my rough and ready approach to logging: create
 // a static logger class that sets an output channel for messages
 // Until I add someone else's logger to the list of dependencies,
@@ -20,7 +19,6 @@ class myLogger {
         this.logOutputChannel.appendLine(`[${timestamp}] ${msg}`);
     }
 }
-
 
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
@@ -102,6 +100,7 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
     getChildren(element?: AsyncZettelViewTreeItem): Thenable<AsyncZettelViewTreeItem[]> {
         if (!this.workspaceRoot) {
             vscode.window.showInformationMessage('No markdown files found in your workspace');
+            myLogger.logMsg('No markdown files found in your workspace');
             return Promise.resolve([]);
         }
 
