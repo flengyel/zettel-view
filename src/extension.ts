@@ -25,9 +25,11 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
     // no wonder this works...
 
+    
+    // The ID regex is configurable in setting, with a default value
+    static regex = vscode.workspace.getConfiguration().get('zettelView.regex', '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$');
     // compile a static regex to match the H1 header
-    // To do: make this regex configurable in settings
-    static re = new RegExp(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+    static re = new RegExp(AsyncZettelViewTreeItem.regex);
    
     constructor(
         public readonly pathname: string,
@@ -37,7 +39,8 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
     ) {
         super(basename, collapsibleState);
         this.label = basename; // assume the label is the basename
-
+        myLogger.logMsg(`Regex: ${AsyncZettelViewTreeItem.regex}`);
+    
         // since we cannot make an asynchronous call to a constructor
         // and we want to consume a stream line-by-line, we return
         // an IIAFE: immediately invoked Asynchronous Function Expression
