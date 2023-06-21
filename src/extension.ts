@@ -20,16 +20,36 @@ class myLogger {
     }
 }
 
+class IDregex {
+    // The ID regex is a configuration contribution point, with a default value
+    private re: RegExp; // save the compiled regex
+    private pattern: string; // save the pattern as a string
+    constructor() {
+        const configRegex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
+        let regex = configRegex as string;
+        if (!regex) {
+            regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$'; 
+            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${regex}`);
+        }
+        this.pattern = regex;
+        this.re = new RegExp(regex);
+    }
+    
+    get regex(): RegExp {
+        return this.re;
+    }
+
+    get patternString(): string {
+        return this.pattern;
+    }
+}
+
+// sadly, a global variable for the compiled RegExp is needed 
+const id = new IDregex();
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
     // no wonder this works...
-
-    
-    // The ID regex is configurable in setting, with a default value
-    static regex = vscode.workspace.getConfiguration().get('zettelView.regex', '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$');
-    // compile a static regex to match the H1 header
-    static re = new RegExp(AsyncZettelViewTreeItem.regex);
    
     constructor(
         public readonly pathname: string,
@@ -39,7 +59,8 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
     ) {
         super(basename, collapsibleState);
         this.label = basename; // assume the label is the basename
-        myLogger.logMsg(`Regex: ${AsyncZettelViewTreeItem.regex}`);
+        
+        //myLogger.logMsg(`Regex: ${id.patternString}`);
     
         // since we cannot make an asynchronous call to a constructor
         // and we want to consume a stream line-by-line, we return
@@ -60,7 +81,8 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 for await (const line of rl) {
                     
                     //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
-                    const match = AsyncZettelViewTreeItem.re.exec(line);
+                    // id is non-local
+                    const match = id.regex.exec(line);
                     if (match) {
                         // check if basename == match[1].md
                         if (basename !== `${match[1]}.md`) {
