@@ -81,7 +81,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                         // check if basename == match[1].md
                         if (basename !== `${match[1]}.md`) {
                             myLogger.logMsg(`ID ${match[1]} does not match filename ${basename}`);
-                            vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
+                            // vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
                         } 
                         this.label = line; // show the H1 header
                         rl.close(); // we're done
@@ -90,7 +90,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 }
                
                 myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
-                vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
+                // vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
                 return this;
             } catch (err) {
