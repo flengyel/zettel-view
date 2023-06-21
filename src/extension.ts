@@ -22,29 +22,23 @@ class myLogger {
 
 class IDregex {
     // The ID regex is a configuration contribution point, with a default value
-    private re: RegExp; // save the compiled regex
-    private pattern: string; // save the pattern as a string
+    private _re: RegExp; // save the compiled regex
+    private _regex: string; // save the pattern as a string
     constructor() {
-        const configRegex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
-        let regex = configRegex as string;
-        if (!regex) {
-            regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$'; 
-            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${regex}`);
+        const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
+        this._regex = regex as string;
+        if (!this._regex) {
+            this._regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$'; // set the default regex if undefined
+            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._regex}`);
         }
-        this.pattern = regex;
-        this.re = new RegExp(regex);
+        this._re = new RegExp(this._regex);
     }
     
-    get regex(): RegExp {
-        return this.re;
-    }
-
-    get patternString(): string {
-        return this.pattern;
-    }
+    get re(): RegExp { return this._re; }
+    get regex(): string { return this._regex; }
 }
 
-// sadly, a global variable for the compiled RegExp is needed 
+// sadly, a global variable for the compiled RegExp is needed by each  
 const id = new IDregex();
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
@@ -60,7 +54,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
         super(basename, collapsibleState);
         this.label = basename; // assume the label is the basename
         
-        //myLogger.logMsg(`Regex: ${id.patternString}`);
+        // myLogger.logMsg(`Regex: ${id.regex}`);
     
         // since we cannot make an asynchronous call to a constructor
         // and we want to consume a stream line-by-line, we return
@@ -82,12 +76,12 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     
                     //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
                     // id is non-local
-                    const match = id.regex.exec(line);
+                    const match = id.re.exec(line);
                     if (match) {
                         // check if basename == match[1].md
                         if (basename !== `${match[1]}.md`) {
                             myLogger.logMsg(`ID ${match[1]} does not match filename ${basename}`);
-                            //vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
+                            vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
                         } 
                         this.label = line; // show the H1 header
                         rl.close(); // we're done
@@ -96,7 +90,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 }
                
                 myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
-                //vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
+                vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
                 return this;
             } catch (err) {
