@@ -49,7 +49,17 @@
                     "dark": "resources/dark/refresh.svg"
                 }
             }
-        ]
+        ],
+		"configuration": {
+			"title": "ID Regex",
+			"properties": {
+				"zettelView.regex": {
+					"type": "string",
+					"default": "^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$",
+					"description": "Regular expression for matching the ID of an H1 header." 
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
