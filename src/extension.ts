@@ -5,41 +5,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-// This is my rough and ready approach to logging: create
-// a static logger class that sets an output channel for messages
-// Until I add someone else's logger to the list of dependencies,
-// you'll have to put up with self-contained code.
+import { myLogger } from './util';
+import { id } from './util';  // IDregex object
 
-class myLogger {
-    static readonly myExtension = "Zettel View";
-    static readonly logOutputChannel = vscode.window.createOutputChannel(this.myExtension);
-    static logMsg(msg : string): void {
-        const now = new Date();  
-        const timestamp = now.toLocaleString();
-        this.logOutputChannel.appendLine(`[${timestamp}] ${msg}`);
-    }
-}
-
-class IDregex {
-    // The ID regex is a configuration contribution point, with a default value
-    private _re: RegExp; // save the compiled regex
-    private _regex: string; // save the pattern as a string
-    constructor() {
-        const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
-        this._regex = regex as string;
-        if (!this._regex) {
-            this._regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$'; // set the default regex if undefined
-            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._regex}`);
-        }
-        this._re = new RegExp(this._regex);
-    }
-    
-    get re(): RegExp { return this._re; }
-    get regex(): string { return this._regex; }
-}
-
-// sadly, a global variable for the compiled RegExp is needed by each  
-const id = new IDregex();
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; This is public in TreeItem!
@@ -159,10 +127,20 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-    const workspaceRoot = vscode.workspace.rootPath;
+    // rootPath is deprecated, disparaged, disowned, and disconsolate
+    // const workspaceRoot = vscode.workspace.rootPath;
+
+    const workspaceRoot = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
+    ? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined;
+    
     if (workspaceRoot) {
         const provider = new ZettelViewTreeDataProvider(workspaceRoot);
         vscode.window.registerTreeDataProvider('zettelView', provider);
+
+        // In case we would like to operate on the tree view...
+        // this is a redesign
+        // this.ftpViewer = vscode.window.createTreeView('ftpExplorer', { treeDataProvider });
+        
         vscode.commands.registerCommand('zettelView.refreshEntry', () => provider.refresh());
     }
 }
