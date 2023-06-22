@@ -137,8 +137,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const provider = new ZettelViewTreeDataProvider(workspaceRoot);
         vscode.window.registerTreeDataProvider('zettelView', provider);
 
-        // In case we would like to operate on the tree view...
-        // this is a redesign
+        // In case we would like to operate on the tree view... a redesdohm
         // this.ftpViewer = vscode.window.createTreeView('ftpExplorer', { treeDataProvider });
         
         vscode.commands.registerCommand('zettelView.refreshEntry', () => provider.refresh());
