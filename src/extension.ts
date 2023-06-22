@@ -10,7 +10,7 @@ import { id } from './util';  // IDregex object
 
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
-    //public label: string; This is public in TreeItem!
+    //public label: string; // label is public in TreeItem!
     // no wonder this works...
    
     constructor(
