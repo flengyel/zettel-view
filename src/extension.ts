@@ -19,6 +19,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
         public readonly command?: vscode.Command,
     ) {
         super(basename, collapsibleState);
+        this.contextValue = "zettelItem"; // this is the key to the context menu
         this.label = basename; // assume the label is the basename
         
         // myLogger.logMsg(`Regex: ${id.regex}`);

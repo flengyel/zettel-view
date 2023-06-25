@@ -38,7 +38,14 @@
 					"when": "view == zettelView",
 					"group": "navigation"
 				}
-			]
+			],
+			"viewItem": [
+					{
+						"command": "zettelView.renameEntry",
+						"when": "view == zettelView && viewItem == zettelItem",
+						"group": "inline"
+					}
+				]
 		},
 		"commands": [
             {
@@ -51,7 +58,7 @@
             },
 			{	
 				"command": "zettelView.renameEntry",
-				"title": "Rename",
+				"title": "Rename and replace links",
 				"icon": {
 					"light": "resources/light/rename.svg",
 					"dark": "resources/dark/rename.svg"
