@@ -48,7 +48,15 @@
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
-            }
+            },
+			{	
+				"command": "zettelView.renameEntry",
+				"title": "Rename",
+				"icon": {
+					"light": "resources/light/rename.svg",
+					"dark": "resources/dark/rename.svg"
+				}		 		
+			}
         ],
 		"configuration": {
 			"title": "ID Regex",
