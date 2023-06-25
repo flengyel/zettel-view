@@ -49,8 +49,10 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                         if (basename !== `${match[1]}.md`) {
                             myLogger.logMsg(`ID ${match[1]} does not match filename ${basename}`);
                             // vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
-                        } 
-                        this.label = line; // show the H1 header
+                        } else {
+                            this.label = line; // show the H1 header only when the ID matches the filename
+                            // That way you know you have to update the filename or the ID
+                        }                          
                         rl.close(); // we're done
                         return this;
                     }
@@ -146,35 +148,34 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('zettelView.renameEntry', async (node) => {
     
         // Prompt the user for the new name
-        const newName = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
+            const newName = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
 
-        if (newName && node) {
-            // Validate the new name against the regex
-            if (!id.re.test(newName)) {
-                vscode.window.showErrorMessage('The new ID is invalid. Please try again.');
-                return;
-            }
+            if (newName && node) {
+                // Validate the new name against the regex
+                if (!id.re.test(newName)) {
+                    vscode.window.showErrorMessage('The new ID is invalid. Please try again.');
+                    return;
+                }
 
-            try {
-                // Assume node.fsPath is the file path of the file to be renamed
-                const oldPath = node.fsPath;
-                const newPath = path.join(path.dirname(oldPath), newName);
+                try {
+                    // Assume node.fsPath is the file path of the file to be renamed
+                    const oldPath = node.fsPath;
+                    const newPath = path.join(path.dirname(oldPath), newName);
 
-                // Rename the file
-                await fs.promises.rename(oldPath, newPath);
+                    // Rename the file
+                    await fs.promises.rename(oldPath, newPath);
 
-                // Now find and replace all the links in the workspace
-                // Assume that we have a function findAndReplaceAllLinks(oldPath, newPath)
-                await replaceLinks(oldPath, newPath);
+                    // Now find and replace all the links in the workspace
+                    // Assume that we have a function findAndReplaceAllLinks(oldPath, newPath)
+                    await replaceLinks(oldPath, newPath);
 
-                // Refresh the tree view
-                provider.refresh();
-            } catch (error) {
-                myLogger.logMsg(`Failed to rename file: ${error}`);
-            }
-    }
-});
-
+                    // Refresh the tree view
+                    provider.refresh();
+                } catch (error) {
+                    myLogger.logMsg(`Failed to rename file: ${error}`);
+                }
+            }   
+        });
     }
 }
 
