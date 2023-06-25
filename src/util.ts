@@ -18,20 +18,27 @@ export class myLogger {
 
 export class IDregex {
     // The ID regex is a configuration contribution point, with a default value
-    private _re: RegExp; // save the compiled regex
-    private _regex: string; // save the pattern as a string
+    private _h1re: RegExp; // save the compiled regex
+    private _h1regex: string; // save the pattern as a string
+    private _idre: RegExp; // save the compiled regex
+    private _idregex: string; // save the first pattern group as a string
     constructor() {
         const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
-        this._regex = regex as string;
-        if (!this._regex) {
-            this._regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3}) (.+)$'; // set the default regex if undefined
-            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._regex}`);
+        this._h1regex = regex as string;
+        if (!this._h1regex) {
+            this._h1regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3})'; // set the default regex if undefined
+            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._h1regex}`);
         }
-        this._re = new RegExp(this._regex);
+        this._h1re = new RegExp(this._h1regex);
+        this._idregex = this._h1re.source.slice(3); // remove the ^# from the front
+        this._idre = new RegExp(this._idregex);
+
     }
     
-    get re(): RegExp { return this._re; }
-    get regex(): string { return this._regex; }
+    get h1re(): RegExp { return this._h1re; }
+    get h1regex(): string { return this._h1regex; }
+    get idre(): RegExp { return this._idre; }
+    get idregex(): string { return this._idregex; }
 }
 
 // sadly, an object for compiled RegExp is needed by each ZettelViewTreeItem

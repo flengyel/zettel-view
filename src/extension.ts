@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-import { myLogger,id } from './util';
+import { myLogger,id, IDregex } from './util';
 import { replaceLinks } from './replaceLinks';
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
@@ -19,7 +19,7 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
         public readonly command?: vscode.Command,
     ) {
         super(basename, collapsibleState);
-        this.contextValue = "zettelItem"; // this is the key to the context menu
+        //this.contextValue = "zettelItem"; // this is the key to the context menu
         this.label = basename; // assume the label is the basename
         
         // myLogger.logMsg(`Regex: ${id.regex}`);
@@ -42,9 +42,9 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
             
                 for await (const line of rl) {
                     
-                    //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3}) (.+)$/);
+                    //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3})/);
                     // id is non-local
-                    const match = id.re.exec(line);
+                    const match = id.h1re.exec(line);
                     if (match) {
                         // check if basename == match[1].md
                         if (basename !== `${match[1]}.md`) {
@@ -117,6 +117,8 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
                                             arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
                                         }
                                     );
+                                // Set the contextValue
+                                obj.contextValue = 'zettelItem';
                                 return obj;
                             }
                     )(); 
@@ -149,25 +151,26 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('zettelView.renameEntry', async (node) => {
     
         // Prompt the user for the new name
-            const newName = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
-
-            if (newName && node) {
-                // Validate the new name against the regex
-                if (!id.re.test(newName)) {
-                    vscode.window.showErrorMessage('The new ID is invalid. Please try again.');
+            const newID = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
+            if (newID && node) {
+                // Validate the new ID against the regex
+                myLogger.logMsg(`New name: ${newID}`);
+                if (!id.idre.test(newID)) {
+                    vscode.window.showErrorMessage(`The new ID ${newID} does not match ${id.idregex}. Please try again.`);
                     return;
                 }
 
                 try {
                     // Assume node.fsPath is the file path of the file to be renamed
                     const oldPath = node.fsPath;
+                    //concatenate the new ID with the extension ".md"
+                    const newName = `${newID}.md`;
                     const newPath = path.join(path.dirname(oldPath), newName);
 
                     // Rename the file
                     await fs.promises.rename(oldPath, newPath);
 
                     // Now find and replace all the links in the workspace
-                    // Assume that we have a function findAndReplaceAllLinks(oldPath, newPath)
                     await replaceLinks(oldPath, newPath);
 
                     // Refresh the tree view

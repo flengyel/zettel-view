@@ -39,6 +39,13 @@
 					"group": "navigation"
 				}
 			],
+			"explorer/context": [
+				{
+					"command": "zettelView.renameEntry",
+					"when": "resourceExtname == .md",
+					"group": "1_modification"
+				}
+			],
 			"viewItem": [
 					{
 						"command": "zettelView.renameEntry",
@@ -58,11 +65,7 @@
             },
 			{	
 				"command": "zettelView.renameEntry",
-				"title": "Rename and replace links",
-				"icon": {
-					"light": "resources/light/rename.svg",
-					"dark": "resources/dark/rename.svg"
-				}		 		
+				"title": "Rename and replace links"
 			}
         ],
 		"configuration": {
