@@ -6,7 +6,7 @@ const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-async function replaceLinks(oldPath: string, newPath: string): Promise<void> {
+export async function replaceLinks(oldPath: string, newPath: string): Promise<void> {
     const oldFilename = path.basename(oldPath, '.md');
     const newFilename = path.basename(newPath, '.md');
     const dirPath = path.dirname(oldPath);

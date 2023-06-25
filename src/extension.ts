@@ -5,9 +5,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-import { myLogger } from './util';
-import { id } from './util';  // IDregex object
-
+import { myLogger,id } from './util';
+import { replaceLinks } from './replaceLinks';
 
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; // label is public in TreeItem!
@@ -141,6 +140,41 @@ export function activate(context: vscode.ExtensionContext): void {
         // this.ftpViewer = vscode.window.createTreeView('ftpExplorer', { treeDataProvider });
         
         vscode.commands.registerCommand('zettelView.refreshEntry', () => provider.refresh());
+
+
+        // Register a command for renaming a markdown file
+        vscode.commands.registerCommand('zettelView.renameEntry', async (node) => {
+    
+        // Prompt the user for the new name
+        const newName = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
+
+        if (newName && node) {
+            // Validate the new name against the regex
+            if (!id.re.test(newName)) {
+                vscode.window.showErrorMessage('The new ID is invalid. Please try again.');
+                return;
+            }
+
+            try {
+                // Assume node.fsPath is the file path of the file to be renamed
+                const oldPath = node.fsPath;
+                const newPath = path.join(path.dirname(oldPath), newName);
+
+                // Rename the file
+                await fs.promises.rename(oldPath, newPath);
+
+                // Now find and replace all the links in the workspace
+                // Assume that we have a function findAndReplaceAllLinks(oldPath, newPath)
+                await replaceLinks(oldPath, newPath);
+
+                // Refresh the tree view
+                provider.refresh();
+            } catch (error) {
+                myLogger.logMsg(`Failed to rename file: ${error}`);
+            }
+    }
+});
+
     }
 }
 
