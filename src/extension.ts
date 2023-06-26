@@ -5,10 +5,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-import { myLogger,id, IDregex } from './util';
+import { myLogger,id, IDregex } from './utils';
 import { replaceLinks } from './replaceLinks';
 
-class AsyncZettelViewTreeItem extends vscode.TreeItem {
+export class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; // label is public in TreeItem!
     // no wonder this works...
     // retain the list of WikiLinks in the Zettel
@@ -182,7 +182,11 @@ export function activate(context: vscode.ExtensionContext): void {
                     myLogger.logMsg(`Failed to rename file: ${error}`);
                 }
                 // Now find and replace all the links in the workspace
-                await replaceLinks(oldPath, newPath);
+                
+                const oldID = path.basename(oldPath, '.md');
+            
+                //await replaceLinks(oldPath, newPath, workspaceRoot);
+                await replaceLinks(node, oldID, newID);
 
                 // Refresh the tree view
                 provider.refresh();
