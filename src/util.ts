@@ -22,6 +22,8 @@ export class IDregex {
     private _h1regex: string; // save the pattern as a string
     private _idre: RegExp; // save the compiled regex
     private _idregex: string; // save the first pattern group as a string
+    private _linkregex: string; // save the pattern as a string
+    private _linkre: RegExp; // save the compiled regex
     constructor() {
         const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
         this._h1regex = regex as string;
@@ -32,13 +34,16 @@ export class IDregex {
         this._h1re = new RegExp(this._h1regex);
         this._idregex = this._h1re.source.slice(3); // remove the ^# from the front
         this._idre = new RegExp(this._idregex);
-
+        this._linkregex = '\\[\\[(' + this._idregex + ')\\]\\]'; // regex for markdown links
+        this._linkre = new RegExp(this._linkregex);
     }
     
     get h1re(): RegExp { return this._h1re; }
     get h1regex(): string { return this._h1regex; }
     get idre(): RegExp { return this._idre; }
     get idregex(): string { return this._idregex; }
+    get linkre(): RegExp { return this._linkre; }
+    get linkregex(): string { return this._linkregex; }
 }
 
 // sadly, an object for compiled RegExp is needed by each ZettelViewTreeItem

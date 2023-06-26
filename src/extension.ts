@@ -11,7 +11,9 @@ import { replaceLinks } from './replaceLinks';
 class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; // label is public in TreeItem!
     // no wonder this works...
-   
+    // retain the list of WikiLinks in the Zettel
+    public linkedIDs: Set<string> = new Set<string>();
+    private idMatch = false;
     constructor(
         public readonly pathname: string,
         public readonly basename: string,
@@ -36,30 +38,35 @@ class AsyncZettelViewTreeItem extends vscode.TreeItem {
                   input: fileStream,
                  crlfDelay: Infinity,
                 });
-          
-                // The mixed technique does not work--
-                // rl.on('line', (line) => 
-            
+    
+                // Read the file line by line
                 for await (const line of rl) {
-                    
-                    //const match = line?.match(/^# ((\w{1,4}\.){2,}\d\w{3})/);
-                    // id is non-local
-                    const match = id.h1re.exec(line);
-                    if (match) {
+                    const h1match = id.h1re.exec(line);
+                    if (h1match) {
                         // check if basename == match[1].md
-                        if (basename !== `${match[1]}.md`) {
-                            myLogger.logMsg(`ID ${match[1]} does not match filename ${basename}`);
+                        if (basename !== `${h1match[1]}.md`) {
+                            myLogger.logMsg(`ID ${h1match[1]} does not match filename ${basename}`);
                             // vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
                         } else {
+                            this.idMatch = true;
                             this.label = line; // show the H1 header only when the ID matches the filename
                             // That way you know you have to update the filename or the ID
                         }                          
-                        rl.close(); // we're done
-                        return this;
                     }
+                    // Regex to match markdown links, capture the ID
+                    let match;
+                    const linkRegex = /\[\[([\w\\.]+)\]\]/g;
+                    while ((match = linkRegex.exec(line)) !== null) {
+                        // match[1] is the ID
+                        // vscode.window.showInformationMessage(`Found ID: ${match[1]}`);
+                        if (match[1] !== this.basename) {
+                            this.linkedIDs.add(match[1]);
+                        }
+                    }   
                 }
-               
-                myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
+                if (!this.idMatch) {
+                    myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
+                }
                 // vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
                 return this;
@@ -160,24 +167,25 @@ export function activate(context: vscode.ExtensionContext): void {
                     return;
                 }
 
-                try {
-                    // Assume node.fsPath is the file path of the file to be renamed
-                    const oldPath = node.fsPath;
-                    //concatenate the new ID with the extension ".md"
-                    const newName = `${newID}.md`;
-                    const newPath = path.join(path.dirname(oldPath), newName);
+                
+                // Assume node.fsPath is the file path of the file to be renamed
+                const oldPath = node.fsPath;
+                //concatenate the new ID with the extension ".md"
+                const newName = `${newID}.md`;
+                const newPath = path.join(path.dirname(oldPath), newName);
 
+                try {
                     // Rename the file
                     await fs.promises.rename(oldPath, newPath);
 
-                    // Now find and replace all the links in the workspace
-                    await replaceLinks(oldPath, newPath);
-
-                    // Refresh the tree view
-                    provider.refresh();
                 } catch (error) {
                     myLogger.logMsg(`Failed to rename file: ${error}`);
                 }
+                // Now find and replace all the links in the workspace
+                await replaceLinks(oldPath, newPath);
+
+                // Refresh the tree view
+                provider.refresh();
             }   
         });
     }
