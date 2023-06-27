@@ -1,5 +1,7 @@
 import { expect } from 'chai';
+import { BacklinksMap } from '../utils/BacklinksMap';
 import { updateBacklinksMap } from '../utils/updateBacklinksMap';
+
 
 describe('updateBacklinksMap', () => {
   let map: BacklinksMap;
