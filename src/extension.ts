@@ -4,9 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-
-import { myLogger,id, IDregex } from './utils';
-import { replaceLinks } from './replaceLinks';
+import { logger, id } from './utils/utils';
 
 export class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; // label is public in TreeItem!
@@ -45,7 +43,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     if (h1match) {
                         // check if basename == match[1].md
                         if (basename !== `${h1match[1]}.md`) {
-                            myLogger.logMsg(`ID ${h1match[1]} does not match filename ${basename}`);
+                            logger(`ID ${h1match[1]} does not match filename ${basename}`);
                             // vscode.window.showInformationMessage(`ID ${match[1]} does not match filename ${basename}`);
                         } else {
                             this.idMatch = true;
@@ -65,7 +63,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     }   
                 }
                 if (!this.idMatch) {
-                    myLogger.logMsg(`# ID TITLE not found in: ${basename}`);
+                    logger(`# ID TITLE not found in: ${basename}`);
                 }
                 // vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
@@ -96,7 +94,7 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
     getChildren(element?: AsyncZettelViewTreeItem): Thenable<AsyncZettelViewTreeItem[]> {
         if (!this.workspaceRoot) {
             vscode.window.showInformationMessage('No markdown files found in your workspace');
-            myLogger.logMsg('No markdown files found in your workspace');
+            logger('No markdown files found in your workspace');
             return Promise.resolve([]);
         }
 
@@ -161,7 +159,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const newID = await vscode.window.showInputBox({ prompt: 'Enter the new ID' });
             if (newID && node) {
                 // Validate the new ID against the regex
-                myLogger.logMsg(`New name: ${newID}`);
+                logger(`New name: ${newID}`);
                 if (!id.idre.test(newID)) {
                     vscode.window.showErrorMessage(`The new ID ${newID} does not match ${id.idregex}. Please try again.`);
                     return;
@@ -179,14 +177,14 @@ export function activate(context: vscode.ExtensionContext): void {
                     await fs.promises.rename(oldPath, newPath);
 
                 } catch (error) {
-                    myLogger.logMsg(`Failed to rename file: ${error}`);
+                    logger(`Failed to rename file: ${error}`);
                 }
                 // Now find and replace all the links in the workspace
                 
-                const oldID = path.basename(oldPath, '.md');
+                const oldID = path.basename(oldPath);
             
                 //await replaceLinks(oldPath, newPath, workspaceRoot);
-                await replaceLinks(node, oldID, newID);
+               // await replaceLinks(node, oldID, newID, workspaceRoot);
 
                 // Refresh the tree view
                 provider.refresh();
