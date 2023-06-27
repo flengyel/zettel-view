@@ -47,34 +47,34 @@
 				}
 			],
 			"viewItem": [
-					{
-						"command": "zettelView.renameEntry",
-						"when": "view == zettelView && viewItem == zettelItem",
-						"group": "inline"
-					}
-				]
+				{
+					"command": "zettelView.renameEntry",
+					"when": "view == zettelView && viewItem == zettelItem",
+					"group": "inline"
+				}
+			]
 		},
 		"commands": [
-            {
-                "command": "zettelView.refreshEntry",
-                "title": "Refresh",
-                "icon": {
-                    "light": "resources/light/refresh.svg",
-                    "dark": "resources/dark/refresh.svg"
-                }
-            },
-			{	
+			{
+				"command": "zettelView.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
 				"command": "zettelView.renameEntry",
 				"title": "Rename and replace links"
 			}
-        ],
+		],
 		"configuration": {
 			"title": "ID Regex",
 			"properties": {
 				"zettelView.regex": {
 					"type": "string",
 					"default": "^# ((\\w{1,4}\\.){2,}\\d\\w{3})",
-					"description": "Regular expression for matching the ID of an H1 header." 
+					"description": "Regular expression for matching the ID of an H1 header."
 				}
 			}
 		}
@@ -86,12 +86,15 @@
 		"lint": "eslint \"src/**/*.ts\""
 	},
 	"devDependencies": {
+		"@types/chai": "^4.3.5",
 		"@types/mkdirp": "^0.5.2",
+		"@types/mocha": "^10.0.1",
 		"@types/node": "^16.18.36",
 		"@types/rimraf": "^2.0.2",
 		"@types/vscode": "^1.73.0",
 		"@typescript-eslint/eslint-plugin": "^5.42.0",
 		"@typescript-eslint/parser": "^5.42.0",
+		"chai": "^4.3.7",
 		"eslint": "^8.26.0",
 		"typescript": "^5.1.3"
 	},
