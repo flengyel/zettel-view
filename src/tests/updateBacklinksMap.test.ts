@@ -1,20 +1,20 @@
 import { expect } from 'chai';
-import { BacklinksMap } from '../utils/BacklinksMap';
-import { updateBacklinksMap } from '../utils/updateBacklinksMap';
+import { IncomingLinksMap } from '../utils/IncomingLinksMap';
+import { updateIncomingLinksMap } from '../utils/updateIncomingLinksMap';
 
 
 describe('updateBacklinksMap', () => {
-  let map: BacklinksMap;
+  let map: IncomingLinksMap;
 
   beforeEach(() => {
-    map = new BacklinksMap();
+    map = new IncomingLinksMap();
   });
 
-  it('should update the backlinks map correctly', async () => {
+  it('should update the incoming links map correctly', async () => {
     map.addLink('oldID', 'sourceID');
-    await updateBacklinksMap('oldID', 'newID', map);
-    expect(map.getBacklinksFor('sourceID')).to.include('newID');
-    expect(map.getBacklinksFor('sourceID')).to.not.include('oldID');
+    await updateIncomingLinksMap('oldID', 'newID', map);
+    expect(map.getIncomingLinksFor('sourceID')).to.include('newID');
+    expect(map.getIncomingLinksFor('sourceID')).to.not.include('oldID');
   });
 
   // Add more tests as needed...

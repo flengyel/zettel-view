@@ -4,22 +4,29 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import { logger, id } from './utils/utils';
+import { logger, id, extractIDFromFilename } from './utils/utils';
+import { IncomingLinksMap } from './utils/IncomingLinksMap';
+
+const incomingLinksMap = new IncomingLinksMap();
 
 export class AsyncZettelViewTreeItem extends vscode.TreeItem {
     //public label: string; // label is public in TreeItem!
     // no wonder this works...
     // retain the list of WikiLinks in the Zettel
-    public linkedIDs: Set<string> = new Set<string>();
+    public incomingLinks: Set<string> = new Set<string>();
     private idMatch = false;
     constructor(
         public readonly pathname: string,
         public readonly basename: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        private incomingLinksMap: IncomingLinksMap,
         public readonly command?: vscode.Command,
     ) {
         super(basename, collapsibleState);
         //this.contextValue = "zettelItem"; // this is the key to the context menu
+        
+        // Here you extract the ID from the filename 
+        const _id = extractIDFromFilename(this.basename); 
         this.label = basename; // assume the label is the basename
         
         // myLogger.logMsg(`Regex: ${id.regex}`);
@@ -55,18 +62,19 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     let match;
                     const linkRegex = /\[\[([\w\\.]+)\]\]/g;
                     while ((match = linkRegex.exec(line)) !== null) {
-                        // match[1] is the ID
-                        // vscode.window.showInformationMessage(`Found ID: ${match[1]}`);
-                        if (match[1] !== this.basename) {
-                            this.linkedIDs.add(match[1]);
-                        }
-                    }   
+                        this.incomingLinksMap.addLink(match[1], _id); // Use the extracted ID here
+                    }
+
+                       
                 }
                 if (!this.idMatch) {
                     logger(`# ID TITLE not found in: ${basename}`);
                 }
                 // vscode.window.showInformationMessage(`# ID TITLE header not found in: ${basename}`);
                 rl.close();
+
+                // Add the set of incoming links for this file to this object
+                this.incomingLinks = this.incomingLinksMap.getIncomingLinksFor(this.basename);
                 return this;
             } catch (err) {
                 console.error(err);
@@ -116,7 +124,9 @@ class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelV
                     (async => {
                                 const obj =  new AsyncZettelViewTreeItem(path.join(this.workspaceRoot, file), 
                                         file,   
-                                        vscode.TreeItemCollapsibleState.None, {
+                                        vscode.TreeItemCollapsibleState.None, 
+                                        incomingLinksMap,  // add this line
+                                        {
                                             command: 'vscode.open',
                                             title: '',
                                             arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],

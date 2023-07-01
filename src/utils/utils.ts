@@ -1,18 +1,23 @@
 import { IDregex } from './IDregex';
 export const id = new IDregex();
 
-import { BacklinksMap } from './BacklinksMap';
-export const backlinksMap = new BacklinksMap();
+import { IncomingLinksMap } from './IncomingLinksMap';
+export const incomingLinksMapMap = new IncomingLinksMap();
 
 import { myLogger } from './MyLogger';
 export const logger = myLogger.logMsg;
 
-import { replaceBacklinks } from './replaceBacklinks';
+import { replaceIncomingLinks } from './replaceIncomingLinks';
 
-export { updateBacklinksMap } from './updateBacklinksMap';
+export { updateIncomingLinksMap } from './updateIncomingLinksMap';
 
 
-
+// A function to extract the ID from a filename
+export function extractIDFromFilename(filename: string): string {
+	const match = filename.match(/^(.*).md$/);
+	return match ? match[1] : '';
+}
+  
 
 
 
