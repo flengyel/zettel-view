@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import { logger, id, extractIDFromFilename } from './utils/utils';
+import { logger, idregex, extractIDFromFilename } from './utils/utils';
 import { IncomingLinksMap } from './utils/IncomingLinksMap';
 
 const incomingLinksMap = new IncomingLinksMap();
@@ -25,12 +25,9 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
         super(basename, collapsibleState);
         //this.contextValue = "zettelItem"; // this is the key to the context menu
         
-        // Here you extract the ID from the filename 
-        const _id = extractIDFromFilename(this.basename); 
         this.label = basename; // assume the label is the basename
-        
-        // myLogger.logMsg(`Regex: ${id.regex}`);
-    
+        const ID = extractIDFromFilename(basename);
+             
         // since we cannot make an asynchronous call to a constructor
         // and we want to consume a stream line-by-line, we return
         // an IIAFE: immediately invoked Asynchronous Function Expression
@@ -43,10 +40,9 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                   input: fileStream,
                  crlfDelay: Infinity,
                 });
-    
                 // Read the file line by line
                 for await (const line of rl) {
-                    const h1match = id.h1re.exec(line);
+                    const h1match = idregex.h1RegExp.exec(line);
                     if (h1match) {
                         // check if basename == match[1].md
                         if (basename !== `${h1match[1]}.md`) {
@@ -62,7 +58,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     let match;
                     const linkRegex = /\[\[([\w\\.]+)\]\]/g;
                     while ((match = linkRegex.exec(line)) !== null) {
-                        this.incomingLinksMap.addLink(match[1], _id); // Use the extracted ID here
+                        this.incomingLinksMap.addLink(match[1], ID); // Use the extracted ID here
                     }
 
                        
@@ -74,7 +70,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 rl.close();
 
                 // Add the set of incoming links for this file to this object
-                this.incomingLinks = this.incomingLinksMap.getIncomingLinksFor(this.basename);
+                this.incomingLinks = this.incomingLinksMap.getIncomingLinksFor(ID);
                 return this;
             } catch (err) {
                 console.error(err);
@@ -170,8 +166,8 @@ export function activate(context: vscode.ExtensionContext): void {
             if (newID && node) {
                 // Validate the new ID against the regex
                 logger(`New name: ${newID}`);
-                if (!id.idre.test(newID)) {
-                    vscode.window.showErrorMessage(`The new ID ${newID} does not match ${id.idregex}. Please try again.`);
+                if (!idregex.idRegExp.test(newID)) {
+                    vscode.window.showErrorMessage(`The new ID ${newID} does not match ${idregex.idRegExpStr}. Please try again.`);
                     return;
                 }
 

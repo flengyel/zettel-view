@@ -1,13 +1,11 @@
 import { IDregex } from './IDregex';
-export const id = new IDregex();
+export const idregex = new IDregex();
 
 import { IncomingLinksMap } from './IncomingLinksMap';
 export const incomingLinksMapMap = new IncomingLinksMap();
 
 import { myLogger } from './MyLogger';
 export const logger = myLogger.logMsg;
-
-import { replaceIncomingLinks } from './replaceIncomingLinks';
 
 export { updateIncomingLinksMap } from './updateIncomingLinksMap';
 
