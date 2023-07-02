@@ -2,31 +2,31 @@ import * as vscode from 'vscode';
 
 export class IDregex {
     // The ID regex is a configuration contribution point, with a default value
-    private _h1re: RegExp; // save the compiled regex
-    private _h1regex: string; // save the pattern as a string
-    private _idre: RegExp; // save the compiled regex
-    private _idregex: string; // save the first pattern group as a string
-    private _linkregex: string; // save the pattern as a string
-    private _linkre: RegExp; // save the compiled regex
+    private _h1RegExp: RegExp; // save the compiled regex
+    private _h1RegExpStr: string; // save the pattern as a string
+    private _idRegExp: RegExp; // save the compiled regex
+    private _idRegExpStr: string; // save the first pattern group as a string
+    private _linkRegExp: RegExp; // save the compiled regex
+    private _linkRegExpStr: string; // save the pattern as a string
     constructor() {
         const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
-        this._h1regex = regex as string;
-        if (!this._h1regex) {
-            this._h1regex = '^# ((\\w{1,4}\\.){2,}\\d\\w{3})'; // set the default regex if undefined
-            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._h1regex}`);
+        this._h1RegExpStr = regex as string;
+        if (!this._h1RegExpStr) {
+            this._h1RegExpStr = '^# ((\\w{1,4}\\.){2,}\\d\\w{3})'; // set the default regex if undefined
+            vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._h1RegExpStr}`);
         }
-        this._h1re = new RegExp(this._h1regex);
-        this._idregex = this._h1regex.slice(3); // remove the ^# from the front
-        this._idre = new RegExp(this._idregex);
-        this._linkregex = '\\[\\[(' + this._idregex + ')\\]\\]'; // regex for markdown links
-        this._linkre = new RegExp(this._linkregex);
+        this._h1RegExp = new RegExp(this._h1RegExpStr);
+        this._idRegExpStr = this._h1RegExpStr.slice(3); // remove the ^# from the front
+        this._idRegExp = new RegExp(this._idRegExpStr);
+        this._linkRegExpStr = '\\[\\[(' + this._idRegExpStr + ')\\]\\]'; // regex for markdown links
+        this._linkRegExp = new RegExp(this._linkRegExpStr);
     }
     
-    get h1re(): RegExp { return this._h1re; }
-    get h1regex(): string { return this._h1regex; }
-    get idre(): RegExp { return this._idre; }
-    get idregex(): string { return this._idregex; }
-    get linkre(): RegExp { return this._linkre; }
-    get linkregex(): string { return this._linkregex; }
+    get h1RegExp(): RegExp { return this._h1RegExp; }
+    get h1RegExpStr(): string { return this._h1RegExpStr; }
+    get idRegExp(): RegExp { return this._idRegExp; }
+    get idRegExpStr(): string { return this._idRegExpStr; }
+    get linkRegExp(): RegExp { return this._linkRegExp; }
+    get linkRegExpStr(): string { return this._linkRegExpStr; }
 }
 
