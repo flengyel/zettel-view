@@ -1,7 +1,6 @@
-
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as path from 'path';
+//import * as path from 'path';
 import * as readline from 'readline';
 import { logger, idregex, extractIDFromFilename } from './utils/utils';
 import { IncomingLinksMap } from './utils/IncomingLinksMap';
@@ -35,10 +34,15 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                   crlfDelay: Infinity,
                 });
                 
-				// Duplication to remove the error that "this.markdownID is used before it is assigned"
+                // Reassign markdownID here for use in the async function
+                // Needed dur to TypeScript's "strictPropertyInitialization" rule, 
+				// which is a part of the "strict" compilation option. This rule 
+				// requires that all properties of a class are initialized in 
+				// the constructor, or have a default value assigned to them.
+				
 				this.markdownID = extractIDFromFilename(basename);
-
-                for await (const line of rl) {
+                
+				for await (const line of rl) {
                     const h1match = idregex.h1RegExp.exec(line);
                     if (h1match) {
                         if (basename !== `${h1match[1]}.md`) {
