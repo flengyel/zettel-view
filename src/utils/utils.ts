@@ -9,16 +9,9 @@ export const logger = myLogger.logMsg;
 
 export { updateIncomingLinksMap } from './updateIncomingLinksMap';
 
-
 // A function to extract the ID from a filename
 export function extractIDFromFilename(filename: string): string {
-	const match = filename.match(/^(.*).md$/);
-	return match ? match[1] : '';
+    const mdExtensionRegex = /^(.*).md$/;
+    const match = filename.match(mdExtensionRegex);
+    return match ? match[1] : '';
 }
-  
-
-
-
-
-
-

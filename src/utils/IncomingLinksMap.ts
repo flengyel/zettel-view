@@ -1,36 +1,32 @@
-
-
 export class IncomingLinksMap {
-    private incominglinks: Map<string, Set<string>>;
+    private incomingLinks: Map<string, Set<string>>;
 
     constructor() {
-        this.incominglinks = new Map<string, Set<string>>();
+        this.incomingLinks = new Map<string, Set<string>>();
     }
 
     addLink(sourceID: string, targetID: string) {
-        let incominglinksForTarget = this.incominglinks.get(targetID);
-        if (!incominglinksForTarget) {
-            incominglinksForTarget = new Set<string>();
-            this.incominglinks.set(targetID, incominglinksForTarget);
+        if (!this.incomingLinks.has(targetID)) {
+            this.incomingLinks.set(targetID, new Set<string>());
         }
-        incominglinksForTarget.add(sourceID);
+
+        this.incomingLinks.get(targetID)?.add(sourceID);
     }
 
     removeLink(sourceID: string, targetID: string) {
-        const incominglinksForTarget = this.incominglinks.get(targetID);
-        if (incominglinksForTarget) {
-            incominglinksForTarget.delete(sourceID);
-            if (incominglinksForTarget.size === 0) {
-                this.incominglinks.delete(targetID);
+        const incomingLinksForTarget = this.incomingLinks.get(targetID);
+        if (incomingLinksForTarget) {
+            incomingLinksForTarget.delete(sourceID);
+            
+            if (incomingLinksForTarget.size === 0) {
+                this.incomingLinks.delete(targetID);
             }
         }
     }
 
     getIncomingLinksFor(targetID: string): Set<string> {
-        return this.incominglinks.get(targetID) || new Set<string>();
+        return this.incomingLinks.get(targetID) || new Set<string>();
     }
 
     // And so on 
 }
-
-
