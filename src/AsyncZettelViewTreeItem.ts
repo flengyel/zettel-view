@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 //import * as path from 'path';
 import * as readline from 'readline';
-import { logger, idregex, extractIDFromFilename } from './utils/utils';
+import { idregex, extractIDFromFilename } from './utils/utils';
 import { IncomingLinksMap } from './utils/IncomingLinksMap';
+import { MyLogger } from './utils/MyLogger';
 
 export class AsyncZettelViewTreeItem extends vscode.TreeItem {
     public incomingLinks: Set<string> = new Set<string>();
@@ -46,7 +47,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                     const h1match = idregex.h1RegExp.exec(line);
                     if (h1match) {
                         if (basename !== `${h1match[1]}.md`) {
-                            logger(`ID ${h1match[1]} does not match filename ${basename}`);
+                            MyLogger.logMsg(`ID ${h1match[1]} does not match filename ${basename}`);
                         } else {
                             this.idMatch = true;
                             this.label = line; 
@@ -62,7 +63,7 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 }
 
                 if (!this.idMatch) {
-                    logger(`# ID TITLE not found in: ${basename}`);
+                    MyLogger.logMsg(`# ID TITLE not found in: ${basename}`);
                 }
 
                 rl.close();

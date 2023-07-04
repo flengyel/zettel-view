@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AsyncZettelViewTreeItem } from './AsyncZettelViewTreeItem';
 import { IncomingLinksMap } from './utils/IncomingLinksMap';
-import { logger } from './utils/utils';
+import { MyLogger } from './utils/MyLogger';
 
 export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelViewTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<undefined> = new vscode.EventEmitter<undefined>();
@@ -22,7 +22,7 @@ export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<Async
     async getChildren(element?: AsyncZettelViewTreeItem): Promise<AsyncZettelViewTreeItem[]> {
         if (!this.workspaceRoot) {
             vscode.window.showInformationMessage('No markdown files found in your workspace');
-            logger('No markdown files found in your workspace');
+            MyLogger.logMsg('No markdown files found in your workspace');
             return [];
         }
 

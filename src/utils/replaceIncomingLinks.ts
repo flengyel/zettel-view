@@ -8,35 +8,24 @@ export const id = new IDregex();
 import { IncomingLinksMap } from './IncomingLinksMap';
 export const incomingLinksMap = new IncomingLinksMap();
 
-import { myLogger } from './MyLogger';
-export const logger = myLogger.logMsg;
+import { MyLogger } from './MyLogger';
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-export async function replaceIncomingLinks(
-    oldID: string,
-    newID: string,
-    workspaceRoot: string,
-    incomingLinksMap: IncomingLinksMap
-): Promise<void> {
-    const dirPath = workspaceRoot;
-    const incomingLinksForOldID = incomingLinksMap.getIncomingLinksFor(oldID);
- 
-    const regex = new RegExp(`\\[\\[${oldID}\\]\\]`, 'g');
- 
-    for (const sourceID of incomingLinksForOldID) {
-        const filePath = path.join(dirPath, `${sourceID}.md`);
+export async function replaceIncomingLinks(oldID: string, newID: string, workspaceRoot: string, incomingLinksMap: IncomingLinksMap) {
+    // Get a set of source files which have links to the oldID
+    const incomingLinks = incomingLinksMap.getIncomingLinksFor(oldID);
 
-        try {
-            const content = await readFile(filePath, 'utf-8');
+    // Loop through each file and replace all occurrences of oldID with newID
+    for (const sourceID of incomingLinks) {
+        const sourceFilePath = path.join(workspaceRoot, `${sourceID}.md`);
+        const content = await fs.promises.readFile(sourceFilePath, 'utf-8');
+        const updatedContent = content.split(`[[${oldID}]]`).join(`[[${newID}]]`);
+        await fs.promises.writeFile(sourceFilePath, updatedContent, 'utf-8');
 
-            const newContent = content.replace(regex, `[[${newID}]]`);
-
-            await writeFile(filePath, newContent, 'utf-8');
-        } catch (error) {
-            myLogger.logMsg(`Error replacing links in file ${filePath}: ${error}`);
-        }
+        // Update the IncomingLinksMap to reflect the change in ID
+        incomingLinksMap.removeLink(sourceID, oldID);
+        incomingLinksMap.addLink(sourceID, newID);
     }
 }
-
