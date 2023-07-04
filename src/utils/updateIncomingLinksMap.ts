@@ -9,9 +9,8 @@ export async function updateIncomingLinksMap(
 
     for (const sourceID of incomingLinksForOldID) {
         incomingLinksMap.addLink(newID, sourceID);
-    }
-
-    for (const sourceID of incomingLinksForOldID) {
         incomingLinksMap.removeLink(oldID, sourceID);
     }
 }
+
+

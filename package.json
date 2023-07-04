@@ -28,6 +28,11 @@
 					"name": "Zettel View",
 					"icon": "media/dep.svg",
 					"contextualTitle": "Zettelkasten View"
+				},
+				{
+					"id": "incomingZettelView",
+					"name": "Incoming Zettels",
+					"contextualTitle": "Incoming Zettel View"
 				}
 			]
 		},
@@ -36,6 +41,11 @@
 				{
 					"command": "zettelView.refreshEntry",
 					"when": "view == zettelView",
+					"group": "navigation"
+				},
+				{
+					"command": "incomingLinksView.refreshEntry",
+					"when": "view == incomingLinksView",
 					"group": "navigation"
 				}
 			],
@@ -66,6 +76,14 @@
 			{
 				"command": "zettelView.renameEntry",
 				"title": "Rename and replace links"
+			},
+			{
+				"command": "incomingLinksView.refreshEntry",
+				"title": "Refresh Incoming Links",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
 			}
 		],
 		"configuration": {

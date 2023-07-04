@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 // Until I add someone else's logger to the list of dependencies,
 // you'll have to put up with self-contained code.
 
-export class myLogger {
+export class MyLogger {
     static readonly myExtension = "Zettel View";
     static readonly logOutputChannel = vscode.window.createOutputChannel(this.myExtension);
     static logMsg(msg : string): void {
