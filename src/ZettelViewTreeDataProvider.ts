@@ -9,15 +9,31 @@ export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<Async
     private _onDidChangeTreeData: vscode.EventEmitter<undefined> = new vscode.EventEmitter<undefined>();
     onDidChangeTreeData: vscode.Event<undefined> = this._onDidChangeTreeData.event;
 
+    private _onDidSelectZettel: vscode.EventEmitter<AsyncZettelViewTreeItem> = new vscode.EventEmitter<AsyncZettelViewTreeItem>();
+    onDidSelectZettel: vscode.Event<AsyncZettelViewTreeItem> = this._onDidSelectZettel.event;
+    
+    // Trigger this event whenever a Zettel is selected in the main view
+    
+
     constructor(private workspaceRoot: string, private incomingLinksMap: IncomingLinksMap) {}
+
+    onZettelSelected(zettel: AsyncZettelViewTreeItem): void {
+        zettel.isReady.then(() => {
+            this.refresh(); // Trigger a refresh of the tree view to update the labels
+        });
+        this._onDidSelectZettel.fire(zettel);
+    }
 
     refresh(): void {
         this._onDidChangeTreeData.fire(undefined);
     }
 
+
     getTreeItem(element: AsyncZettelViewTreeItem): vscode.TreeItem {
         return element;
+        //return new vscode.TreeItem(element.label, element.collapsibleState);
     }
+    
 
     async getChildren(element?: AsyncZettelViewTreeItem): Promise<AsyncZettelViewTreeItem[]> {
         if (!this.workspaceRoot) {
@@ -26,24 +42,24 @@ export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<Async
             return [];
         }
 
-        try {
+        
             const files = await fs.promises.readdir(this.workspaceRoot);
             const markdownFiles = files.filter(file => file.endsWith('.md'));
 
-            return markdownFiles.map(file => new AsyncZettelViewTreeItem(
+            const items = markdownFiles.map(file => new AsyncZettelViewTreeItem(
                 path.join(this.workspaceRoot, file),
                 file,
                 vscode.TreeItemCollapsibleState.None,
                 this.incomingLinksMap,
                 {
-                    command: 'vscode.open',
+                    command: 'zettelkasten.openZettel',
                     title: '',
                     arguments: [vscode.Uri.file(path.join(this.workspaceRoot, file))],
                 }
             ));
-        } catch (err) {
-            console.error(err);
-            return [];
-        }
-    }
+            const readyItems = await Promise.all(items.map(item => item.isReady));
+            //MyLogger.logMsg(`Ready items: ${readyItems.map(item => item.label).join(', ')}`);
+            return readyItems;
+            
+   }
 }
