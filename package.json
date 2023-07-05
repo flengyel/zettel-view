@@ -44,8 +44,8 @@
 					"group": "navigation"
 				},
 				{
-					"command": "incomingLinksView.refreshEntry",
-					"when": "view == incomingLinksView",
+					"command": "incomingZettelView.refreshEntry",
+					"when": "view == incomingZettelView",
 					"group": "navigation"
 				}
 			],
@@ -78,12 +78,16 @@
 				"title": "Rename and replace links"
 			},
 			{
-				"command": "incomingLinksView.refreshEntry",
+				"command": "incomingZettelView.refreshEntry",
 				"title": "Refresh Incoming Links",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
+			},
+			{
+				"command": "zettelkasten.openZettel",
+				"title": "Open Zettel"
 			}
 		],
 		"configuration": {

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { AsyncZettelViewTreeItem } from './AsyncZettelViewTreeItem';
 import { IncomingLinksMap } from './utils/IncomingLinksMap';
 import { MyLogger } from './utils/MyLogger';
@@ -11,8 +12,9 @@ export class IncomingLinksViewTreeDataProvider implements vscode.TreeDataProvide
 
     constructor(private workspaceRoot: string, private incomingLinksMap: IncomingLinksMap) {
         vscode.window.onDidChangeActiveTextEditor(editor => {
-            if (editor && editor.document.languageId === 'markdown') {
+			if (editor && editor.document.languageId === 'markdown') {
                 this.currentMarkdownFile = editor.document.fileName;
+				//MyLogger.logMsg(`Incoming Zettel View: Current markdown file is ${this.currentMarkdownFile}`);
                 this.refresh();
             }
         });
@@ -28,8 +30,8 @@ export class IncomingLinksViewTreeDataProvider implements vscode.TreeDataProvide
 
 	async getChildren(element?: AsyncZettelViewTreeItem): Promise<AsyncZettelViewTreeItem[]> {
 		if (!this.currentMarkdownFile) {
-			vscode.window.showInformationMessage('No markdown file in focus');
-			MyLogger.logMsg('No markdown file in focus');
+			vscode.window.showInformationMessage('Incoming Zettel View: No markdown file in focus');
+			MyLogger.logMsg('Incoming Zettel View: No markdown file in focus');
 			return [];
 		}
 	
@@ -41,16 +43,21 @@ export class IncomingLinksViewTreeDataProvider implements vscode.TreeDataProvide
 			return [];
 		}
 	
-		return Array.from(incomingLinks).map((link: string) => new AsyncZettelViewTreeItem(
-			link, // Incoming link file path
-			vscode.workspace.asRelativePath(link), // Relative file path as label
-			vscode.TreeItemCollapsibleState.None,
-			this.incomingLinksMap,
-			{
-				command: 'vscode.open',
-				title: '',
-				arguments: [vscode.Uri.file(link)],
-			}
-		));
+		return Array.from(incomingLinks).map((id: string) => {
+			const pathname = path.join(this.workspaceRoot, `${id}.md`);
+			const basename = `${id}.md`;
+			return new AsyncZettelViewTreeItem(
+				pathname,
+				basename,
+				vscode.TreeItemCollapsibleState.None,
+				this.incomingLinksMap,
+				{
+					command: 'vscode.open',
+					title: '',
+					arguments: [vscode.Uri.file(pathname)],
+				}
+			);
+		});
 	}
+	
 }

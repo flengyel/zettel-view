@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { MyLogger } from './utils/MyLogger';  
-import { idregex } from './utils/utils'; // Add the import statement for replaceIncomingLinks
+import { idRegex } from './utils/utils'; // Add the import statement for replaceIncomingLinks
 import { replaceIncomingLinks } from './utils/replaceIncomingLinks'; // Add the import statement for replaceIncomingLinks
 import { AsyncZettelViewTreeItem } from './AsyncZettelViewTreeItem';
 import { ZettelViewTreeDataProvider } from './ZettelViewTreeDataProvider';
@@ -14,21 +14,40 @@ import { IncomingLinksViewTreeDataProvider } from './IncomingLinksViewTreeDataPr
 
 const incomingLinksMap = new IncomingLinksMap();
 
+async function selectZettel(zettel: AsyncZettelViewTreeItem, 
+                            zvtdProvider: ZettelViewTreeDataProvider) {
+    await zettel.isReady; // Wait for the async operation to complete
+    zvtdProvider.onZettelSelected(zettel);
+}
+
+
 export function activate(context: vscode.ExtensionContext): void {
     const workspaceRoot = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
     ? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined;
     
     if (workspaceRoot) {
-        const provider = new ZettelViewTreeDataProvider(workspaceRoot, incomingLinksMap);
-        vscode.window.registerTreeDataProvider('zettelView', provider);
+        const zettelViewTreeDataProvider = new ZettelViewTreeDataProvider(workspaceRoot, incomingLinksMap);
+        vscode.window.registerTreeDataProvider('zettelView', zettelViewTreeDataProvider);
         
-        vscode.commands.registerCommand('zettelView.refreshEntry', () => provider.refresh());
-        registerRenameCommand(provider, workspaceRoot, incomingLinksMap); // Pass the workspaceRoot and incomingLinksMap to the function
+        vscode.commands.registerCommand('zettelView.refreshEntry', () => zettelViewTreeDataProvider.refresh());
+        registerRenameCommand(zettelViewTreeDataProvider, workspaceRoot, incomingLinksMap); // Pass the workspaceRoot and incomingLinksMap to the function
 
         const incomingZettelViewProvider = new IncomingLinksViewTreeDataProvider(workspaceRoot, incomingLinksMap);
         vscode.window.registerTreeDataProvider('incomingZettelView', incomingZettelViewProvider);
 
         vscode.commands.registerCommand('incomingZettelView.refreshEntry', () => incomingZettelViewProvider.refresh());
+
+
+        context.subscriptions.push(vscode.commands.registerCommand('zettelkasten.openZettel', (fileUri: vscode.Uri, treeItem: AsyncZettelViewTreeItem) => {
+            // Open the file
+            vscode.commands.executeCommand('vscode.open', fileUri);
+        
+            MyLogger.logMsg(`zettelkasten.openZettel: ${fileUri.toString()}`);
+
+            selectZettel(treeItem, zettelViewTreeDataProvider);
+            
+        }));
+        
     }
 }
 
@@ -39,8 +58,8 @@ function registerRenameCommand(provider: ZettelViewTreeDataProvider, workspaceRo
         if (newID && node) {
             // Validate the new ID against the regex
             MyLogger.logMsg(`New name: ${newID}`);
-            if (!idregex.idRegExp.test(newID)) {
-                vscode.window.showErrorMessage(`The new ID ${newID} does not match ${idregex.idRegExpStr}. Please try again.`);
+            if (!idRegex.idRegExp.test(newID)) {
+                vscode.window.showErrorMessage(`The new ID ${newID} does not match ${idRegex.idRegExpStr}. Please try again.`);
                 return;
             }
     

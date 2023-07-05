@@ -8,6 +8,9 @@ export class IDregex {
     private _idRegExpStr: string; // save the first pattern group as a string
     private _linkRegExp: RegExp; // save the compiled regex
     private _linkRegExpStr: string; // save the pattern as a string
+    private _mdRegExp: RegExp; // regex for markdown links
+    private _mdRegExpStr: string; // regex for markdown links
+
     constructor() {
         const regex = vscode.workspace.getConfiguration().get('zettelView.regex'); 
         this._h1RegExpStr = regex as string;
@@ -15,11 +18,14 @@ export class IDregex {
             this._h1RegExpStr = '^# ((\\w{1,4}\\.){2,}\\d\\w{3})'; // set the default regex if undefined
             vscode.window.showInformationMessage(`No regex found in settings. Using default: ${this._h1RegExpStr}`);
         }
+        this._mdRegExpStr =  '^(.*)\\.md$'; // regex for markdown links
+        this._mdRegExp = new RegExp(this._mdRegExpStr);
         this._h1RegExp = new RegExp(this._h1RegExpStr);
         this._idRegExpStr = this._h1RegExpStr.slice(3); // remove the ^# from the front
         this._idRegExp = new RegExp(this._idRegExpStr);
         this._linkRegExpStr = '\\[\\[(' + this._idRegExpStr + ')\\]\\]'; // regex for markdown links
-        this._linkRegExp = new RegExp(this._linkRegExpStr);
+        // /g is needed to find all matches, or there will be an infinite llop.
+        this._linkRegExp = new RegExp(this._linkRegExpStr, 'g');
     }
     
     get h1RegExp(): RegExp { return this._h1RegExp; }
@@ -28,5 +34,7 @@ export class IDregex {
     get idRegExpStr(): string { return this._idRegExpStr; }
     get linkRegExp(): RegExp { return this._linkRegExp; }
     get linkRegExpStr(): string { return this._linkRegExpStr; }
+    get mdRegExp(): RegExp { return this._mdRegExp; }
+    get mdRegExpStr(): string { return this._mdRegExpStr; }
 }
 
