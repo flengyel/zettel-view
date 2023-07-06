@@ -1,16 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import * as util from 'util';
-
 import { IDregex } from './IDregex';
 export const id = new IDregex();
 
 import { IncomingIDMap } from './IncomingIDMap';
 
-import { MyLogger } from './MyLogger';
 
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
 
 export async function replaceIncomingIDs(oldID: string, newID: string, workspaceRoot: string, incomingIDMap: IncomingIDMap) {
     // Get a set of source files which have links to the oldID

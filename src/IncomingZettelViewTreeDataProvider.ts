@@ -61,7 +61,7 @@ export class IncomingZettelViewTreeDataProvider implements vscode.TreeDataProvid
 	
 		const id = path.basename(this.currentMarkdownFile, '.md');
 		const incomingIDs = this.incomingIDMap.getIncomingIDsFor(id);
-		MyLogger.logMsg(`Incoming IDs for ${id}: ${JSON.stringify(incomingIDs)}`); // Add this log
+		// MyLogger.logMsg(`Incoming IDs for ${id}: ${JSON.stringify(incomingIDs)}`); 
 	
 		if (!incomingIDs || incomingIDs.size === 0) {
 			vscode.window.showInformationMessage(`No incoming IDs for the file ${this.currentMarkdownFile}`);
@@ -91,6 +91,5 @@ export class IncomingZettelViewTreeDataProvider implements vscode.TreeDataProvid
 	
 		return items;
 	}
-	
 
 }
