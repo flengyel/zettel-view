@@ -75,11 +75,11 @@
 			},
 			{
 				"command": "zettelView.renameEntry",
-				"title": "Rename and replace links"
+				"title": "Rename and replace IDs"
 			},
 			{
 				"command": "incomingZettelView.refreshEntry",
-				"title": "Refresh Incoming Links",
+				"title": "Refresh Incoming IDs",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"

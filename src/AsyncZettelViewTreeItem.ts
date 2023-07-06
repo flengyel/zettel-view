@@ -2,14 +2,13 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as readline from 'readline';
 import { idRegex, extractIDFromFilename } from './utils/utils';
-import { IncomingLinksMap } from './utils/IncomingLinksMap';
+import { IncomingIDMap } from './utils/IncomingIDMap';
 import { MyLogger } from './utils/MyLogger';
-//import { IncomingLinksViewTreeDataProvider } from './IncomingLinksViewTreeDataProvider';
 
 export class AsyncZettelViewTreeItem extends vscode.TreeItem {
     // public label: string; 
     public isReady: Promise<AsyncZettelViewTreeItem>;
-    public incomingLinks: Set<string> = new Set<string>();
+    public incomingIDs: Set<string> = new Set<string>();
     private idMatch = false;
     private markdownID: string;
     
@@ -17,13 +16,13 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
         public readonly pathname: string,
         public readonly basename: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-        private incomingLinksMap: IncomingLinksMap,
+        private incomingIDMap: IncomingIDMap,
         public readonly command?: vscode.Command,
     ) {
         super(basename, collapsibleState);
         this.label = basename;
 
-        MyLogger.logMsg(`AsyncZettelViewTreeItem constructor: this.label is ${this.label}`);
+        // MyLogger.logMsg(`AsyncZettelViewTreeItem constructor: this.label is ${this.label}`);
         this.markdownID = extractIDFromFilename(basename);
 
 		// since we cannot make an asynchronous call to a constructor
@@ -57,15 +56,18 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                         } else {
                             this.idMatch = true;
                             this.label = line;
-                            MyLogger.logMsg(`ID MATCH: this.label is supposed to be ${this.label}`); 
+                            //MyLogger.logMsg(`ID MATCH: this.label is supposed to be ${this.label}`); 
                         }                          
                     }
-                    // all links are of the form [[ID]] or [[ID|TITLE]]
+                    // all IDs are of the form [[ID]] or [[ID|TITLE]]
 					// I don't know if Zettlr understands [[ID|TITLE]] 
                     let match;
                     while ((match = idRegex.linkRegExp.exec(line)) !== null) {
-                        this.incomingLinksMap.addLink(match[1], this.markdownID);
-                        //MyLogger.logMsg(`Added incoming link from ${match[1]} to ${this.markdownID}`);
+                        this.incomingIDMap.addID(this.markdownID, match[1]);
+                        if (this.markdownID == `ham.2.0.23.0124.1142`) {
+                            // what is going on with this ID?
+                            MyLogger.logMsg(`Added incoming link from ${this.markdownID} to ${match[1]}`);
+                        }
                     }
                 }
 
@@ -74,10 +76,15 @@ export class AsyncZettelViewTreeItem extends vscode.TreeItem {
                 }
 
                 rl.close();
-                this.incomingLinks = this.incomingLinksMap.getIncomingLinksFor(this.markdownID);
+                this.incomingIDs = this.incomingIDMap.getIncomingIDsFor(this.markdownID);
+                if (this.markdownID == `ham.2.0.23.0124.1142`) {
+                    MyLogger.logMsg(`Incoming IDs for ${this.markdownID}: ${Array.from(this.incomingIDs)}`);
+                }
+                //MyLogger.logMsg(`Incoming IDs for ${this.markdownID}: ${Array.from(this.incomingIDs)}`);
 
                 return this;
             } catch (err) {
+                this.label = basename;  // a default value
                 console.error(err);
                 return this;
             }

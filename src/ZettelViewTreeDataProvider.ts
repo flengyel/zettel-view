@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AsyncZettelViewTreeItem } from './AsyncZettelViewTreeItem';
-import { IncomingLinksMap } from './utils/IncomingLinksMap';
+import { IncomingIDMap } from './utils/IncomingIDMap';
 import { MyLogger } from './utils/MyLogger';
 
 export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<AsyncZettelViewTreeItem> {
@@ -15,7 +15,7 @@ export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<Async
     // Trigger this event whenever a Zettel is selected in the main view
     
 
-    constructor(private workspaceRoot: string, private incomingLinksMap: IncomingLinksMap) {}
+    constructor(private workspaceRoot: string, private incomingIDMap: IncomingIDMap) {}
 
     onZettelSelected(zettel: AsyncZettelViewTreeItem): void {
         zettel.isReady.then(() => {
@@ -50,7 +50,7 @@ export class ZettelViewTreeDataProvider implements vscode.TreeDataProvider<Async
                 path.join(this.workspaceRoot, file),
                 file,
                 vscode.TreeItemCollapsibleState.None,
-                this.incomingLinksMap,
+                this.incomingIDMap,
                 {
                     command: 'zettelkasten.openZettel',
                     title: '',

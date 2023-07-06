@@ -1,10 +1,6 @@
 import { IDregex } from './IDregex';
 export const idRegex = new IDregex();
-
-import { IncomingLinksMap } from './IncomingLinksMap';
-export const incomingLinksMapMap = new IncomingLinksMap();
-
-export { updateIncomingLinksMap } from './updateIncomingLinksMap';
+export { updateIncomingIDMap } from './updateIncomingIDMap';
 
 // A function to extract the ID from a filename
 export function extractIDFromFilename(filename: string): string {
